@@ -13,20 +13,20 @@ class Mydataset(Dataset):
         self.imgfiles = [[], []]
         path_gt = os.path.join(imgs_dir, 'gt')
         path_input = os.path.join(imgs_dir, 'input')
-        for file in os.listdir(path_input):  # combine中包含了合成图片的路径索引
-            self.imgfiles[0].append(os.path.join(path_input, file))   # 添加网络输入图片路径
-            self.imgfiles[1].append(os.path.join(path_gt, file.replace('RGBN', 'RGB')))   # 添加rgb图像路径
+        for file in os.listdir(path_input):
+            self.imgfiles[0].append(os.path.join(path_input, file))
+            self.imgfiles[1].append(os.path.join(path_gt, file.replace('RGBN', 'RGB')))
 
     def __len__(self):
         return len(self.imgfiles[0])
 
     @classmethod
-    def preprocess(cls, pil_img, patch_size, patch_coords, flip_op):  # 对操作的图片进行预处理，截取部分区域，进行镜像反转
+    def preprocess(cls, pil_img, patch_size, patch_coords, flip_op):
         if flip_op == 1:
-            pil_img = ImageOps.mirror(pil_img)  # 水平方向镜像
+            pil_img = ImageOps.mirror(pil_img)
         elif flip_op == 2:
-            pil_img = ImageOps.flip(pil_img)  # 垂直方向镜像
-        img_nd = np.array(pil_img)  # 创建numpy数组
+            pil_img = ImageOps.flip(pil_img)
+        img_nd = np.array(pil_img)
         assert len(img_nd.shape) == 3, 'Training/validation images should be 3 channels colored images'
         img_nd = img_nd[patch_coords[1]:patch_coords[1]+patch_size, patch_coords[0]:patch_coords[0]+patch_size, :]
         # HWC to CHW
